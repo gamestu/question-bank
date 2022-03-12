@@ -1,5 +1,6 @@
 //九九乘法練習
 import React from "react";
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 const Question = styled.div`
   font-size: 50px;
@@ -29,18 +30,37 @@ export const createAddQuestion = (key) => {
   );
 }
 
-const Multiplication = () => {
+export const createSubstractQuestion = (key) => {
+  const a = getRandom(11, 19);
+  const b = getRandom(a - 10, 9);
+  return (
+    <Question className="mb-3" key={key}>{a} - {b} = </Question>
+  );
+}
+
+const ExamPaper = ({examType}) => {
   const questionsPerPage = 10;
   const pageNumber = 20;
   
   function createQuestions() {
-    const questionArray = Array(questionsPerPage).fill(1);
-    const result = questionArray.map((item, index) => {
-      const type = getRandom(1,2);
-      if(type === 1){
+    const questionArray = Array(questionsPerPage).fill(examType);
+    const result = questionArray.map((examType, index) => {
+      const type = getRandom(1,3);
+      const m = new Map();
+      m.set(1, createAddQuestion);
+      m.set(2, createSubstractQuestion);
+      m.set(3, createMultipleQuestion);
+      switch(examType){
+      case 'add':
         return createAddQuestion(index);
-      }else{
+      case 'substract':
+        return createSubstractQuestion(index);
+      case 'multiply':
         return createMultipleQuestion(index);
+      case 'mixed':
+        return m.get(type)(index);
+      default:
+        return createAddQuestion(index);
       }
     });
     return result;
@@ -68,4 +88,8 @@ const Multiplication = () => {
   );
 };
 
-export default Multiplication;
+export default ExamPaper;
+
+ExamPaper.propTypes = {
+  examType: PropTypes.string
+};
