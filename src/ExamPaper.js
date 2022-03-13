@@ -2,45 +2,38 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-const Question = styled.div`
+import {
+  createMultipleQuestion,
+  createAddQuestion,
+  createSubstractQuestion,
+  getRandom
+} from "./helpers/question-creators";
+const SQuestion = styled.div`
   font-size: 50px;
   font-family: Monaco;
 `;
 const SPage = styled.div`
   @media print {
+    padding-top: 50px;
     page-break-after: always;
   }
+  @media screen {
+    border-bottom: 1px solid black;
+  }
+  padding: 0 10px;
 `;
-export const getRandom = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-export const createMultipleQuestion = (key) => {
-  const a = getRandom(2, 9);
-  const b = getRandom(2, 9);
-  return (
-    <Question className="mb-3" key={key}>{a} x {b} = </Question>
-  );
-}
 
-export const createAddQuestion = (key) => {
-  const a = getRandom(10, 19);
-  const b = getRandom(1, 9);
-  return (
-    <Question className="mb-3" key={key}>{a} + {b} = </Question>
-  );
-}
 
-export const createSubstractQuestion = (key) => {
-  const a = getRandom(11, 19);
-  const b = getRandom(a - 10, 9);
+
+const Question = ({a, b, operator}) => {
   return (
-    <Question className="mb-3" key={key}>{a} - {b} = </Question>
+    <SQuestion>{`${a} ${operator} ${b} = `}</SQuestion>
   );
-}
+};
 
 const ExamPaper = ({examType}) => {
   const questionsPerPage = 10;
-  const pageNumber = 20;
+  const pageNumber = 100;
   
   function createQuestions() {
     const questionArray = Array(questionsPerPage).fill(examType);
@@ -52,15 +45,15 @@ const ExamPaper = ({examType}) => {
       m.set(3, createMultipleQuestion);
       switch(examType){
       case 'add':
-        return createAddQuestion(index);
+        return Question({...createAddQuestion()});
       case 'substract':
-        return createSubstractQuestion(index);
+        return Question({ ...createSubstractQuestion() });
       case 'multiply':
-        return createMultipleQuestion(index);
+        return Question({ ...createMultipleQuestion() });
       case 'mixed':
-        return m.get(type)(index);
+          return Question({ ...m.get(type)() });
       default:
-        return createAddQuestion(index);
+        return Question({ ...createAddQuestion() });
       }
     });
     return result;
